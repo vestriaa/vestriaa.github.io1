@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level Downloader</title>
+<style>
+    body {
+        background-image: linear-gradient(#5f8bc2, #cfe0ea, #5f8bc2);
+        color: #327DAF;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        position: relative;
+        transition: background-image 0.3s;
+    }
+
+    .container {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 0 50px 50px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s;
+    }
+
+    .input-url, #iterationInput {
+        width: 80%;
+        padding: 12px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border: 1px solid #003366;
+        border-radius: 5px;
+        background-color: rgba(245, 245, 245, 0.1);
+        box-sizing: border-box;
+        color: #003366;
+    }
+
+    .download-button {
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+        border: none;
+        background-color: rgba(0, 51, 102, 0.6);
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .download-button:hover {
+        background-color: rgba(0, 26, 41, 0.7);
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <label for="levelUrl">Enter Level URL:</label>
+    <input type="text" id="levelUrl" class="input-url" placeholder="https://grabvr.quest/levels/viewer/?level=">
+    <button onclick="fetchLevelDetails()" class="download-button">Get Level Details</button>
+
+    <div id="details"></div>
+</div>
+
+<script>
+function fetchLevelDetails() {
+    const levelUrl = document.getElementById('levelUrl').value;
+    const levelIdRegex = /level=([^&]+)/;
+    const match = levelUrl.match(levelIdRegex);
+
+    if (match) {
+        const levelIdentifier = match[1].replace(':', '/');
+        const apiUrl = `https://api.slin.dev/grab/v1/details/${levelIdentifier}/`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                displayIterations(data.identifier.replace('/', ':'), data.iteration);
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        alert('Invalid level URL');
+    }
+}
+
+function displayIterations(identifier, currentIteration) {
+    const detailsDiv = document.getElementById('details');
+    detailsDiv.innerHTML = `<p>Current Iteration: ${currentIteration}</p>`;
+    detailsDiv.innerHTML += '<label for="iterationInput">Select Iteration:</label>';
+    detailsDiv.innerHTML += `<input type="number" id="iterationInput" min="1" max="${currentIteration}" value="${currentIteration}" class="input-url" data-max-iteration="${currentIteration}">`;
+    detailsDiv.innerHTML += `<button onclick="downloadIteration('${identifier}')" class="download-button">Download</button>`;
+}
+
+function downloadIteration(identifier) {
+    const iterationInput = document.getElementById('iterationInput');
+    const iteration = parseInt(iterationInput.value, 10);
+    const maxIteration = parseInt(iterationInput.getAttribute('data-max-iteration'), 10);
+
+    if (iteration > maxIteration) {
+        alert(`Please select an iteration between 1 and ${maxIteration}.`);
+        return;
+    }
+
+    const downloadUrl = `https://api.slin.dev/grab/v1/download/${identifier.replace(':', '/')}/${iteration}/`;
+    const epochTime = Math.floor(Date.now() / 1000);
+    const filename = `${epochTime}.level`;
+
+    downloadFileWithCustomName(downloadUrl, filename);
+}
+
+function downloadFileWithCustomName(downloadUrl, filename) {
+    fetch(downloadUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const blobUrl = window.URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            document.body.appendChild(downloadLink);
+            downloadLink.style.display = 'none';
+            downloadLink.href = blobUrl;
+            downloadLink.download = filename;
+            downloadLink.click();
+            window.URL.revokeObjectURL(blobUrl);
+            document.body.removeChild(downloadLink);
+        })
+        .catch(error => console.error('Error downloading file:', error));
+}
+</script>
+
+</body>
+</html>
