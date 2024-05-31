@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,19 @@
             color: #fff;
             font-family: Arial, sans-serif;
         }
+
         .header {
             text-align: center;
             padding: 20px;
         }
+
         .categories {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 20px;
         }
+
         .category {
             background-color: #7289DA;
             border-radius: 8px;
@@ -28,25 +32,29 @@
             margin: 5px;
             cursor: pointer;
         }
+
         .category i {
             margin-right: 5px;
         }
+
         .content {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
         }
+
         .item {
             background-color: #23272A;
             border-radius: 8px;
             margin: 10px;
             padding: 20px;
             text-align: center;
-            min-width: 200px; /* Set a minimum width */
-            max-width: 300px; /* Set a maximum width */
-            width: auto; /* Allow the width to be adjusted automatically */
-            white-space: normal; /* Allow text to wrap */
+            min-width: 200px;
+            max-width: 300px;
+            width: auto;
+            white-space: normal;
         }
+
         .item img {
             width: 100%;
             height: auto;
@@ -54,6 +62,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>All GRAB Cosmetics</h1>
@@ -130,7 +139,7 @@
                 if (section.title === "Open Shop") {
                     const categoryDiv = document.createElement('div');
                     categoryDiv.className = 'category';
-                    categoryDiv.innerHTML = `<i class="fas fa-shopping-cart"></i> Item Packs`; 
+                    categoryDiv.innerHTML = `<i class="fas fa-shopping-cart"></i> Item Packs`;
                     categoryDiv.addEventListener('click', async () => {
                         const itemPacks = await fetchItemPacks();
                         if (itemPacks) {
@@ -139,15 +148,15 @@
                     });
                     categoriesContainer.appendChild(categoryDiv);
                 } else if (section.title === "Edit Character") {
-                    const sections = section.sections.filter(subSection => 
-                        subSection.title !== "Change Main Color" && 
+                    const sections = section.sections.filter(subSection =>
+                        subSection.title !== "Change Main Color" &&
                         subSection.title !== "Change Detail Color"
                     );
 
                     sections.forEach(subSection => {
                         const categoryDiv = document.createElement('div');
                         categoryDiv.className = 'category';
-                        categoryDiv.innerHTML = getCategoryIcon(subSection.title) + subSection.title; 
+                        categoryDiv.innerHTML = getCategoryIcon(subSection.title) + subSection.title;
                         categoryDiv.addEventListener('click', async () => {
                             const shopItems = await fetchShopItems();
                             const itemPacks = await fetchItemPacks();
@@ -161,14 +170,14 @@
 
         async function renderItems(section, shopItems, itemPacks) {
             const contentContainer = document.getElementById('content');
-            contentContainer.innerHTML = ''; 
+            contentContainer.innerHTML = '';
 
             if (!section.items) {
                 console.error("Items not found for section:", section.title);
                 return;
             }
 
-            renderCosmeticCount(section); 
+            renderCosmeticCount(section);
 
             section.items.forEach(item => {
                 const itemDiv = document.createElement('div');
@@ -189,6 +198,49 @@
                                      <p>Included in: ${packTitle}</p>`;
                 contentContainer.appendChild(itemDiv);
             });
+
+            if (section.title.toLowerCase() === 'heads') {
+
+                const defaultHeadDiv = document.createElement('div');
+                defaultHeadDiv.className = 'item';
+                defaultHeadDiv.innerHTML = `<h3>Default Head</h3>
+                                            <img src="CosmeticsPNG/default_head.png" alt="Default Head">
+                                            <p>Included in: Default</p>`;
+                contentContainer.appendChild(defaultHeadDiv);
+            }
+
+            if (section.title.toLowerCase() === 'hands') {
+
+                const defaultHandsItems = ['claw_hands'];
+                defaultHandsItems.forEach(item => {
+                    const defaultHandsDiv = document.createElement('div');
+                    defaultHandsDiv.className = 'item';
+                    defaultHandsDiv.innerHTML = `<h3>Default Hands</h3>
+                                                 <img src="CosmeticsPNG/${item}.png" alt="Default Hands">
+                                                <p>Included in: Default</p>`;
+                    contentContainer.appendChild(defaultHandsDiv);
+                });
+            }
+
+            if (section.title.toLowerCase() === 'grapples') {
+
+                const defaultGrappleDiv = document.createElement('div');
+                defaultGrappleDiv.className = 'item';
+                defaultGrappleDiv.innerHTML = `<h3>Default Grapple</h3>
+                                               <img src="CosmeticsPNG/default_grapple.png" alt="Default Grapple">
+                                               <p>Included in: Default</p>`;
+                contentContainer.appendChild(defaultGrappleDiv);
+            }
+
+            if (section.title.toLowerCase() === 'checkpoints') {
+
+                const defaultCheckpointDiv = document.createElement('div');
+                defaultCheckpointDiv.className = 'item';
+                defaultCheckpointDiv.innerHTML = `<h3>Default Checkpoint</h3>
+                                                   <img src="CosmeticsPNG/default_checkpoint.png" alt="Default Checkpoint">
+                                                   <p>Included in: Default</p>`;
+                contentContainer.appendChild(defaultCheckpointDiv);
+            }
         }
 
         function renderCosmeticCount(section) {
@@ -204,9 +256,9 @@
 
         async function renderItemPacks(itemPacks) {
             const contentContainer = document.getElementById('content');
-            contentContainer.innerHTML = ''; 
+            contentContainer.innerHTML = '';
             let packCount = 0;
-            const currentDate = Math.floor(Date.now() / 1000); 
+            const currentDate = Math.floor(Date.now() / 1000);
 
             Object.values(itemPacks).forEach(pack => {
 
@@ -242,4 +294,5 @@
         init();
     </script>
 </body>
+
 </html>
