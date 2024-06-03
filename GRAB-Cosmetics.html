@@ -60,6 +60,18 @@
             height: auto;
             border-radius: 8px;
         }
+
+        .pack img {
+            border-radius: 8px;
+        }
+
+        .pack.single img {
+            width: 100%;
+        }
+
+        .pack.multiple img {
+            width: 50%;
+        }
     </style>
 </head>
 
@@ -269,9 +281,12 @@
                     const price = pack.price_currency ? pack.price_currency : (pack.price_usd ? `${pack.price_usd} USD` : 'Free');
 
                     const packDiv = document.createElement('div');
-                    packDiv.className = 'item';
+                    packDiv.className = `item pack ${pack.items.length === 1 ? 'single' : 'multiple'}`;
+
+                    const itemImages = pack.items.map(item => `<img src="CosmeticsPNG/${item}.png" alt="${item}" title="${item}" />`).join('');
+
                     packDiv.innerHTML = `<h3>${pack.title}</h3>
-                                         <img src="ItemPacksPNG/${pack.title.toLowerCase().replace(/ /g, '_')}.png" alt="${pack.title}">
+                                         ${itemImages}
                                          <p>${pack.description}</p>
                                          <p>Price: ${price}</p>
                                          <p>Active: ${active ? 'True' : 'False'}</p>`;
