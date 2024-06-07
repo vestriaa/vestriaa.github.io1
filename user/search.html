@@ -89,8 +89,7 @@
                 .then(data => {
                     var user = data.find(u => u.ID == userId);
                     if (user) {
-
-                        fetch(`https:
+                        fetch(`https://api.slin.dev/grab/v1/get_user_info?user_id=${user.user_id}`)
                             .then(apiResponse => apiResponse.json())
                             .then(apiData => {
                                 var userDetails = document.getElementById("userDetails");
